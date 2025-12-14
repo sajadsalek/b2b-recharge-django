@@ -1,0 +1,18 @@
+[project]
+name = "b2b-recharge-django"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "django>=6.0",
+    "djangorestframework>=3.16.1",
+    "markdown>=3.10",
+    "psycopg[binary]>=3.3.2",
+    "python-dotenv>=1.2.1",
+]
+
+[dependency-groups]
+dev = [
+    "ipython>=9.8.0",
+]
