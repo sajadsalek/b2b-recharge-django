@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'src.core.apps.CoreConfig',
     'src.financial.apps.FinancialConfig',
     'src.authentication.apps.AuthenticationConfig',
-    'src.merchant.apps.MerchantConfig'
+    'src.users.apps.UsersConfig'
 ]
 
 MIDDLEWARE = [
@@ -137,6 +137,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+
+AUTH_USER_MODEL = 'users.BaseUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
