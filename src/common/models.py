@@ -4,7 +4,6 @@ from django.contrib.auth.models import BaseUserManager as BUM
 
 
 class BaseModel(models.Model):
-    id = models.IntegerField(primary_key=True)
     created_at = models.DateTimeField(db_index=True, default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -38,7 +37,7 @@ class BaseUserManager(BUM):
             username=username,
             password=password,
             is_active=True,
-            is_admin=True
+            is_admin=True,
         )
         user.is_superuser = True
         user.save(using=self._db)

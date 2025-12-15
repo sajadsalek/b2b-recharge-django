@@ -14,7 +14,7 @@ class BaseUser(BaseModel, AbstractBaseUser, PermissionsMixin):
     objects = BaseUserManager()
 
     USERNAME_FIELD = "username"
-    REQUIRED_FIELDS = []
+    # REQUIRED_FIELDS = []
 
     def __str__(self):
         return self.username
