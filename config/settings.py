@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'src.core.apps.CoreConfig',
     'src.financial.apps.FinancialConfig',
     'src.authentication.apps.AuthenticationConfig',
+    'src.merchant.apps.MerchantConfig'
 ]
 
 MIDDLEWARE = [
