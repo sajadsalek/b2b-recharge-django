@@ -1,0 +1,67 @@
+from decimal import Decimal
+
+from django.db.models import QuerySet
+from django.utils import timezone
+from django.db import transaction
+from django.core.exceptions import ValidationError
+
+from src.financial.model.refill_request import RefillRequest
+from src.financial.model.wallet import Wallet
+from src.users.models import CustomUser
+from src.financial.services.transaction_services import create_transaction
+
+
+def create_refill_request(*, user: CustomUser, amount: Decimal) -> QuerySet[RefillRequest]:
+    with transaction.atomic():
+        refill_request = RefillRequest.objects.create(
+            amount=amount,
+            user=user,
+        )
+        return refill_request
+
+
+def approve_refill_request(*, request_id) -> None:
+    with transaction.atomic():
+        refill_request = (
+            RefillRequest.objects
+            .select_for_update()
+            .select_related("customer")
+            .get(id=request_id)
+        )
+
+        if refill_request.status != RefillRequest.PENDING:
+            raise ValidationError("Request already processed")
+
+        wallet = (
+            Wallet.objects.select_for_update()
+            .get(id=refill_request.customer.wallet.id)
+        )
+        tr = create_transaction(wallet=wallet, amount=refill_request.amount)
+
+        refill_request.status = RefillRequest.APPROVED
+        # refill_request.admin = admin_user
+        refill_request.updated_at = timezone.now()
+        refill_request.transaction = tr
+        refill_request.save(
+            update_fields=["status", "updated_at"]
+        )
+
+
+def reject_refill_request(*, request_id) -> None:
+    with transaction.atomic():
+        inv = (
+            RefillRequest.objects
+            .select_for_update()
+            .get(id=request_id)
+        )
+
+        if inv.status != RefillRequest.PENDING:
+            raise ValidationError("Request already processed")
+
+        inv.status = RefillRequest.REJECTED
+        # inv.admin = admin_user
+        # inv.reason = reason
+        inv.updated_at = timezone.now()
+        inv.save(
+            update_fields=["status", "updated_at"]
+        )

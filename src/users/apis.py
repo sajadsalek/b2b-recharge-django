@@ -4,10 +4,9 @@ from rest_framework.views import APIView
 from rest_framework import serializers
 
 from django.core.validators import MinLengthValidator
-from src.users.models import BaseUser
+from src.users.models import CustomUser
 from src.users.services import register
 from rest_framework_simplejwt.tokens import RefreshToken
-
 from drf_spectacular.utils import extend_schema
 
 
@@ -18,7 +17,7 @@ class RegisterApi(APIView):
         confirm_password = serializers.CharField(max_length=255)
 
         def validate_username(self, username):
-            if BaseUser.objects.filter(username=username).exists():
+            if CustomUser.objects.filter(username=username).exists():
                 raise serializers.ValidationError("username Already Taken")
             return username
 
@@ -31,12 +30,11 @@ class RegisterApi(APIView):
             return data
 
     class OutPutRegisterSerializer(serializers.ModelSerializer):
-
         token = serializers.SerializerMethodField("get_token")
 
         class Meta:
-            model = BaseUser
-            fields = ("username", "token", "created_at", "updated_at")
+            model = CustomUser
+            fields = ("username", "token", "date_joined")
 
         def get_token(self, user):
             data = dict()
@@ -49,7 +47,11 @@ class RegisterApi(APIView):
 
             return data
 
-    @extend_schema(request=InputRegisterSerializer, responses=OutPutRegisterSerializer)
+    @extend_schema(
+        request=InputRegisterSerializer,
+        responses=OutPutRegisterSerializer,
+        tags=["Registration"],
+    )
     def post(self, request):
         serializer = self.InputRegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -59,8 +61,5 @@ class RegisterApi(APIView):
                 password=serializer.validated_data.get("password"),
             )
         except Exception as ex:
-            return Response(
-                f"Database Error {ex}",
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response(f"Database Error {ex}", status=status.HTTP_400_BAD_REQUEST)
         return Response(self.OutPutRegisterSerializer(user, context={"request": request}).data)
