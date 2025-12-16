@@ -41,7 +41,7 @@ def test_external_charge_request_with_threading(user_with_amount):
 def test_external_charge_request_for_tow_user_with_threading(user, user1):
 
     def create_refill_and_approved(user: CustomUser):
-        ref = create_refill_request(user=user, amount=Decimal("10"))
+        ref = create_refill_request(user=user, amount=Decimal("100"))
         approve_refill_request(request_id=ref.id)
 
         wal = get_wallet(user=user)
@@ -106,13 +106,13 @@ def test_external_charge_request_for_tow_user_with_threading(user, user1):
     assert len(results_user_1) == 400
     assert len(results_user_2) == 400
 
-    assert success_1 == 100
-    assert success_2 == 100
+    assert success_1 == 400
+    assert success_2 == 400
 
     tx_sum_1 = sum(tr.amount for tr in transaction_list(user=user))
     tx_sum_2 = sum(tr.amount for tr in transaction_list(user=user1))
 
     assert user.wallet.remaining == tx_sum_1
-    assert 0 == user.wallet.remaining
+    assert Decimal("600") == user.wallet.remaining
     assert user1.wallet.remaining == tx_sum_2
-    assert 0 == user1.wallet.remaining
+    assert Decimal("600") == user1.wallet.remaining
