@@ -11,7 +11,7 @@ def create_user(*, username: str, password: str) -> CustomUser:
 def register(*, username: str, password: str) -> CustomUser:
     with transaction.atomic():
         user = create_user(username=username, password=password)
-        wallet = Wallet.objects.create(remaining=Decimal('0.00'))  # پیش‌فرض اعتبار 0
+        wallet = Wallet.objects.create(remaining=Decimal("0.00"))
         user.wallet = wallet
-        user.save(update_fields=['wallet'])
+        user.save(update_fields=["wallet"])
         return user

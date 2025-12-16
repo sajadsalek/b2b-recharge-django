@@ -11,26 +11,15 @@ from src.users.models import CustomUser
 
 def external_charge_request_(*, amount: Decimal, phone_number: str, user: CustomUser) -> ExternalChargeRequest:
     with transaction.atomic():
+        user_wallet = Wallet.objects.select_for_update().get(id=user.wallet.id)
 
-        user_wallet = (
-            Wallet.objects
-            .select_for_update()
-            .get(id=user.wallet.id)
-        )
-
-        if user_wallet.remaining < Decimal("0"):
+        check = user_wallet.remaining - amount
+        if check < Decimal("0.00"):
             raise ValidationError("wallet balance is insufficient")
 
-        tr = create_transaction(
-            wallet=user_wallet,
-            amount=amount * -1,
-            description="for charge phone number"
-        )
+        tr = create_transaction(wallet=user_wallet, amount=amount * -1, description="for charge phone number")
 
         external_charge_request = ExternalChargeRequest.objects.create(
-            amount=amount,
-            phone_number=phone_number,
-            transaction=tr,
-            requesting_user=user
+            amount=amount, phone_number=phone_number, transaction=tr, requesting_user=user
         )
         return external_charge_request

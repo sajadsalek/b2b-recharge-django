@@ -6,14 +6,10 @@ class Wallet(BaseModel):
     remaining = models.DecimalField(max_digits=10, decimal_places=2)
 
     def increase(self, amount):
-        Wallet.objects.filter(pk=self.pk).update(
-            remaining=F("remaining") + amount
-        )
+        Wallet.objects.filter(pk=self.pk).update(remaining=F("remaining") + amount)
 
     def decrease(self, amount):
-        Wallet.objects.filter(pk=self.pk).update(
-            remaining=F("remaining") + amount  # amount is negative
-        )
+        wallet = Wallet.objects.filter(pk=self.pk).update(remaining=F("remaining") + amount)
 
     def __str__(self):
         return f"Wallet with balance {self.remaining}"
