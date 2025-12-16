@@ -82,13 +82,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
-print("you configs: " + config.__str__())
 
 DATABASES = {
     "default": {
@@ -98,6 +91,9 @@ DATABASES = {
         "PASSWORD": config.database_password,
         "HOST": config.database_host,
         "PORT": config.database_port,
+        "TEST": {
+            "NAME": "test_b2b_recharge",
+        },
     }
 }
 

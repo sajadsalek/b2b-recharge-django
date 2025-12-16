@@ -1,14 +1,13 @@
 from decimal import Decimal
 
 from django.db import transaction as db_transaction
-from django.db.models import QuerySet
 from django.utils import timezone
 
 from src.financial.model.transaction import Transaction
 from src.financial.model.wallet import Wallet
 
 
-def create_transaction(*, wallet: Wallet, amount: Decimal, description=None) -> QuerySet[Transaction]:
+def create_transaction(*, wallet: Wallet, amount: Decimal, description=None) -> Transaction:
     now = timezone.now()
 
     with db_transaction.atomic():

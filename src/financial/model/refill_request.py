@@ -7,9 +7,9 @@ from src.common.models import BaseModel
 
 
 class RefillRequest(BaseModel):
-    PENDING = "pending"
-    APPROVED = "approved"
-    REJECTED = "rejected"
+    PENDING = "Pending"
+    APPROVED = "Approved"
+    REJECTED = "Rejected"
 
     STATUS_CHOICES = (
         (PENDING, "Pending"),
@@ -22,7 +22,7 @@ class RefillRequest(BaseModel):
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
-        default=PENDING
+        default=PENDING,
     )
     transaction = models.OneToOneField(Transaction, on_delete=models.CASCADE, null=True, blank=True)
     class Meta:
