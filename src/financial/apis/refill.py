@@ -17,7 +17,7 @@ class RefillApi(ApiAuthMixin, APIView):
     class RefillOutputSerializer(serializers.ModelSerializer):
         class Meta:
             model = RefillRequest
-            fields = ("amount", "user", "status")
+            fields = ("amount", "customer", "status")
 
     @extend_schema(
         request=RefillInputSerializer,

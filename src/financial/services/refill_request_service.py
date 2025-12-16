@@ -11,7 +11,7 @@ from src.users.models import CustomUser
 from src.financial.services.transaction_services import create_transaction
 
 
-def create_refill_request(*, user: CustomUser, amount: Decimal) -> QuerySet[RefillRequest]:
+def create_refill_request(*, user: CustomUser, amount: Decimal) -> RefillRequest:
     with transaction.atomic():
         refill_request = RefillRequest.objects.create(
             amount=amount,
@@ -39,7 +39,6 @@ def approve_refill_request(*, request_id) -> None:
         tr = create_transaction(wallet=wallet, amount=refill_request.amount)
 
         refill_request.status = RefillRequest.APPROVED
-        # refill_request.admin = admin_user
         refill_request.updated_at = timezone.now()
         refill_request.transaction = tr
         refill_request.save(
@@ -49,19 +48,17 @@ def approve_refill_request(*, request_id) -> None:
 
 def reject_refill_request(*, request_id) -> None:
     with transaction.atomic():
-        inv = (
+        refill = (
             RefillRequest.objects
             .select_for_update()
             .get(id=request_id)
         )
 
-        if inv.status != RefillRequest.PENDING:
+        if refill.status != RefillRequest.PENDING:
             raise ValidationError("Request already processed")
 
-        inv.status = RefillRequest.REJECTED
-        # inv.admin = admin_user
-        # inv.reason = reason
-        inv.updated_at = timezone.now()
-        inv.save(
+        refill.status = RefillRequest.REJECTED
+        refill.updated_at = timezone.now()
+        refill.save(
             update_fields=["status", "updated_at"]
         )
