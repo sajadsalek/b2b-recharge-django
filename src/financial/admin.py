@@ -21,7 +21,6 @@ class InvestmentRequestAdmin(admin.ModelAdmin):
     actions = ["approve_requests", "reject_requests"]
 
     def save_model(self, request, obj, form, change):
-        # اگر status تغییر کرده و حالا 'approved' هست، action approve رو اجرا کن
         if 'status' in form.changed_data and obj.status == 'approved' and form.initial['status'] == 'pending':
             approve_refill_request(
                 request_id=obj.id
