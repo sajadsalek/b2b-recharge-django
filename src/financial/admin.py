@@ -21,17 +21,17 @@ class InvestmentRequestAdmin(admin.ModelAdmin):
     actions = ["approve_requests", "reject_requests"]
 
     def save_model(self, request, obj, form, change):
-        if 'status' in form.changed_data and obj.status == 'approved' and form.initial['status'] == 'pending':
+        if 'status' in form.changed_data and obj.status == 'Approved' and form.initial['status'] == 'Pending':
             approve_refill_request(
                 request_id=obj.id
             )
-            messages.success(request, "approved")
+            messages.success(request, "Approved")
 
-        elif 'status' in form.changed_data and obj.status == 'rejected' and form.initial['status'] == 'pending':
+        elif 'status' in form.changed_data and obj.status == 'Rejected' and form.initial['status'] == 'Pending':
             reject_refill_request(
                 request_id=obj.id
             )
-            messages.success(request, "rejected.")
+            messages.success(request, "Rejected.")
 
         else:
             raise ValidationError("action not allowed")
